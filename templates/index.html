@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Specialty Recommender</title>
+</head>
+<body>
+    <h1>Medical Specialty Recommender</h1>
+    <form id="description-form">
+        <label for="description">Enter your description:</label><br>
+        <textarea id="description" name="description" rows="4" cols="50"></textarea><br>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="specialties"></div>
+
+    <script>
+        document.getElementById("description-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const description = document.getElementById("description").value;
+            fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "description": description
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const specialties = data.specialties;
+                const specialtiesList = specialties.map(spec => `<li>${spec}</li>`).join("");
+                document.getElementById("specialties").innerHTML = `<h2>Recommended Specialties:</h2><ul>${specialtiesList}</ul>`;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    </script>
+</body>
+</html>
